@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minecraft Skin Stealer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #1e1e1e;
+      color: white;
+      margin: 0;
+      padding: 50px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 250px;
+      border: none;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #skin-container {
+      margin-top: 30px;
+    }
+    img {
+      margin-top: 20px;
+      max-width: 256px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Minecraft Skin Stealer</h1>
+  <form id="skinForm">
+    <input type="text" id="username" placeholder="Enter Minecraft Username" required />
+    <button type="submit">Get Skin</button>
+  </form>
+  <div id="skin-container"></div>
+
+  <script>
+    document.getElementById('skinForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const container = document.getElementById('skin-container');
+      container.innerHTML = '';
+      const username = document.getElementById('username').value;
+      try {
+        const uuidResponse = await fetch(`http://localhost:3000/uuid/${username}`);
+        if (!uuidResponse.ok) throw new Error('User not found');
+        const uuidData = await uuidResponse.json();
+        const skinResponse = await fetch(`http://localhost:3000/skin/${uuidData.id}`);
+        if (!skinResponse.ok) throw new Error('Failed to fetch skin data');
+        const skinData = await skinResponse.json();
+        container.innerHTML = `<h3>Skin for ${username}</h3><img src="${skinData.skinURL}" alt="${username}'s Skin" />`;
+      } catch (error) {
+        container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
